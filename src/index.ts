@@ -50,6 +50,7 @@ export const run = (handler: () => void, config = defaultConfig) => {
 
         log("Running handler...");
         setTimeout(handler, config.timeoutBeforeHandlerInit);
+        log("Handler done...");
     };
 
     if (config.runAtStart) {
@@ -72,6 +73,13 @@ export const run = (handler: () => void, config = defaultConfig) => {
                   matchWithWildcard(window.location.href, url)
               )
             : true;
+
+        if (isNewUrl) {
+            log("New url found...");
+            if (!matchesUrl) {
+                log("Url does not match, skipping...");
+            }
+        }
 
         if ((isNewUrl || isNotInitiated) && matchesUrl) {
             log("New url found, running handler...");
