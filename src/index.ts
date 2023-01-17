@@ -1,5 +1,8 @@
+import { matchWithWildcard } from "./match";
+
 type Config = {
     timeBetweenUrlLookup?: number;
+    urls?: string[];
 };
 
 export const run = (
@@ -15,7 +18,11 @@ export const run = (
             lastSearch !== window.location.search;
         const isNotInitiated = lastPath === null || lastSearch === null;
 
-        if (isNewUrl || isNotInitiated) {
+        const matchesUrl = config.urls?.some((url) =>
+            matchWithWildcard(window.location.href, url)
+        );
+
+        if ((isNewUrl || isNotInitiated) && matchesUrl) {
             lastPath = window.location.pathname;
             lastSearch = window.location.search;
             handler();
