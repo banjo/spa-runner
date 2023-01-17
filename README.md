@@ -20,7 +20,8 @@ const config = {
     urls: ["https://www.github.com/*/projects"],
     timeoutBeforeHandlerInit: 0,
     runAtStart: true,
-    waitForElement: ".btn-danger"
+    waitForElement: ".btn-danger",
+    isDebug: false
 };
 
 const unsubscribe = run(handler, config);
@@ -57,3 +58,7 @@ If the program should run at start, and not only on URL change. Defaults to `tru
 ### Wait for element
 
 The script will run after the element has been rendered. Uses `document.querySelector`. If not provided, it will run as usual.
+
+### Is debug
+
+Adds basic logging in case you want to debug something. Defaults to `false`.

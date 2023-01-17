@@ -1,5 +1,5 @@
 export const logger = (isDebug: boolean) => (statement: string) => {
     if (isDebug) {
-        console.log(statement);
+        console.log("%cDEBUG SPA-RUNNER: " + statement, "color: blue");
     }
 };

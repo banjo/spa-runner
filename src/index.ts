@@ -19,6 +19,9 @@ const defaultConfig: Config = {
     isDebug: false
 };
 
+const WAIT_FOR_ELEMENT_TIMEOUT = 200;
+const WAIT_FOR_ELEMENT_MAXIMUM_TRIES = 20;
+
 export const run = (handler: () => void, config = defaultConfig) => {
     const log = logger(config.isDebug ?? false);
 
@@ -27,13 +30,22 @@ export const run = (handler: () => void, config = defaultConfig) => {
 
         if (config.waitForElement) {
             log("Waiting for element...");
+            let tries = 0;
 
             const element = document.querySelector(config.waitForElement);
-            if (!element) {
+            if (!element && tries < WAIT_FOR_ELEMENT_MAXIMUM_TRIES) {
                 log("Element not found, trying again...");
-                setTimeout(runHandler, 100);
+                tries++;
+                setTimeout(runHandler, WAIT_FOR_ELEMENT_TIMEOUT);
                 return;
             }
+
+            if (!element) {
+                log("Element not found, giving up...");
+                return;
+            }
+
+            log("Element found...");
         }
 
         log("Running handler...");
