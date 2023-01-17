@@ -58,14 +58,24 @@ export const run = (handler: () => void, config = defaultConfig) => {
         runHandler();
     }
 
-    let lastPath: string | null = null;
-    let lastSearch: string | null = null;
+    // used only when the correct url change is found, that triggers the handler
+    let lastMatchingPath: string | null = null;
+    let lastMatchingSearch: string | null = null;
+
+    // used for every url change
+    let lastPath = window.location.pathname;
+    let lastSearch = window.location.search;
 
     const runInterval = setInterval(() => {
+        const isNewMatchingUrl =
+            lastMatchingPath !== window.location.pathname ||
+            lastMatchingSearch !== window.location.search;
+
         const isNewUrl =
             lastPath !== window.location.pathname ||
             lastSearch !== window.location.search;
-        const isNotInitiated = lastPath === null || lastSearch === null;
+        const isNotInitiated =
+            lastMatchingPath === null || lastMatchingSearch === null;
 
         const hasUrls = config.urls && config.urls.length > 0;
         const matchesUrl = hasUrls
@@ -74,18 +84,15 @@ export const run = (handler: () => void, config = defaultConfig) => {
               )
             : true;
 
-        if (isNewUrl) {
-            log("New url found...");
-            if (!matchesUrl) {
-                log("Url does not match, skipping...");
-            }
-        }
-
-        if ((isNewUrl || isNotInitiated) && matchesUrl) {
+        if ((isNewMatchingUrl || isNotInitiated) && matchesUrl) {
             log("New url found, running handler...");
+            lastMatchingPath = window.location.pathname;
+            lastMatchingSearch = window.location.search;
+            runHandler();
+        } else if (isNewUrl) {
             lastPath = window.location.pathname;
             lastSearch = window.location.search;
-            runHandler();
+            log("New url found, but does not match...");
         }
     }, config.timeBetweenUrlLookup);
 
