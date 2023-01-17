@@ -19,7 +19,8 @@ const config = {
     timeBetweenUrlLookup: 250,
     urls: ["https://www.github.com/*/projects"],
     timeoutBeforeHandlerInit: 0,
-    runAtStart: true
+    runAtStart: true,
+    waitForElement: ".btn-danger"
 };
 
 const unsubscribe = run(handler, config);
@@ -52,3 +53,7 @@ When the handler should run, it does so using a timeout to allow the page to loa
 ### Run at start
 
 If the program should run at start, and not only on URL change. Defaults to `true`.
+
+### Wait for element
+
+The script will run after the element has been rendered. Uses `document.querySelector`. If not provided, it will run as usual.

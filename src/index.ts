@@ -5,6 +5,7 @@ type Config = {
     urls?: string[];
     timeoutBeforeHandlerInit?: number;
     runAtStart?: boolean;
+    waitForElement?: string;
 };
 
 const defaultConfig: Config = {
@@ -16,6 +17,14 @@ const defaultConfig: Config = {
 
 export const run = (handler: () => void, config = defaultConfig) => {
     const runHandler = () => {
+        if (config.waitForElement) {
+            const element = document.querySelector(config.waitForElement);
+            if (!element) {
+                setTimeout(runHandler, 100);
+                return;
+            }
+        }
+
         setTimeout(handler, config.timeoutBeforeHandlerInit);
     };
 
