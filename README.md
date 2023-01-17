@@ -17,7 +17,9 @@ const handler = () => {
 
 const config = {
     timeBetweenUrlLookup: 250,
-    urls: ["www.github.com/*/projects"]
+    urls: ["https://www.github.com/*/projects"],
+    timeoutBeforeHandlerInit: 0,
+    runAtStart: true
 };
 
 const unsubscribe = run(handler, config);
