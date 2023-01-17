@@ -26,3 +26,29 @@ const unsubscribe = run(handler, config);
 
 unsubscribe(); 
 ```
+
+## Config
+
+### Time between URL lookup
+
+The interval for each URL lookup. Defaults to `500`.
+
+### URLs
+
+All the URLs that the script should run at. Can include wildcard. Be sure to be more specific in here and use a very broad match in the userscript config. For example:
+
+```
+userscript: www.github.com/*
+spa-runner: www.github.com/*/settings
+```
+
+Defaults to an empty array and matches all.
+
+### Timeout before handler init
+
+When the handler should run, it does so using a timeout to allow the page to load. This property sets that timeout duration. Defaults to `0`.
+
+
+### Run at start
+
+If the program should run at start, and not only on URL change. Defaults to `true`.
