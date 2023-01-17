@@ -1,0 +1,65 @@
+{
+    "name": "@banjoanton/spa-runner",
+    "type": "module",
+    "version": "0.0.1",
+    "packageManager": "pnpm@7.18.2",
+    "description": "",
+    "author": "Anton Ödman <anton.odman@gmail.com>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/banjo/spa-runner.git"
+    },
+    "bugs": "https://github.com/banjo/spa-runner/issues",
+    "keywords": [],
+    "sideEffects": false,
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "require": "./dist/index.cjs",
+            "import": "./dist/index.mjs"
+        }
+    },
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/*",
+                "./dist/index.d.ts"
+            ]
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "unbuild",
+        "dev": "unbuild --stub",
+        "lint": "eslint .",
+        "prepublishOnly": "nr build",
+        "release": "bumpp && npm publish --access public",
+        "start": "esno src/index.ts",
+        "test": "vitest",
+        "typecheck": "tsc --noEmit",
+        "format": "prettier --write ."
+    },
+    "devDependencies": {
+        "@antfu/ni": "^0.18.8",
+        "@typescript-eslint/eslint-plugin": "^5.46.1",
+        "@typescript-eslint/parser": "^5.46.1",
+        "bumpp": "^8.2.1",
+        "eslint": "^8.29.0",
+        "esno": "^0.16.3",
+        "pnpm": "^7.18.2",
+        "prettier": "^2.8.1",
+        "typescript": "^4.9.4",
+        "unbuild": "^1.0.2",
+        "vite": "^4.0.1",
+        "vitest": "^0.25.7"
+    },
+    "dependencies": {
+        "globby": "^13.1.3"
+    }
+}
