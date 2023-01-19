@@ -31,24 +31,14 @@ export const run = (handler: Handler, config = defaultConfig) => {
         runner();
     }
 
-    // used only when the correct url change is found, that triggers the handler
-    let lastMatchingPath = window.location.pathname;
-    let lastMatchingSearch = window.location.search;
-
-    // used for every url change
     let lastPath = window.location.pathname;
     let lastSearch = window.location.search;
 
     const runInterval = setInterval(() => {
-        const isNewMatchingUrl =
-            lastMatchingPath !== window.location.pathname ||
-            lastMatchingSearch !== window.location.search;
-
+      
         const isNewUrl =
             lastPath !== window.location.pathname ||
             lastSearch !== window.location.search;
-        const isNotInitiated =
-            lastMatchingPath === null || lastMatchingSearch === null;
 
         const hasUrls = config.urls && config.urls.length > 0;
         const matchesUrl = hasUrls
@@ -57,10 +47,10 @@ export const run = (handler: Handler, config = defaultConfig) => {
               )
             : true;
 
-        if ((isNewMatchingUrl || isNotInitiated) && matchesUrl) {
+        if (isNewUrl && matchesUrl) {
             logger("New url found, running handler...");
-            lastMatchingPath = window.location.pathname;
-            lastMatchingSearch = window.location.search;
+            lastPath = window.location.pathname;
+            lastSearch = window.location.search;
             runner();
         } else if (isNewUrl) {
             lastPath = window.location.pathname;

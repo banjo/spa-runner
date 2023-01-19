@@ -89,4 +89,61 @@ describe("run", () => {
         unsubscribe();
         expect(handler).toHaveBeenCalledTimes(3);
     });
+
+    it("should run on matching url change", () => {
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: false,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            urls: [defaultUrl + "/test"]
+        });
+        updateWindowLocation(defaultUrl + "/test");
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run first interval
+        updateWindowLocation(defaultUrl + "/somethingelse");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run second interval
+        updateWindowLocation(defaultUrl + "/hello");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run third interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("should run on mulitple matching url changes", () => {
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: false,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            urls: [defaultUrl + "/test", defaultUrl + "/test2"]
+        });
+        updateWindowLocation(defaultUrl + "/test");
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run first interval
+        updateWindowLocation(defaultUrl + "/somethingelse");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run second interval
+        updateWindowLocation(defaultUrl + "/test2");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run third interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(2);
+    });
+
+    it("should match on same url match two times", () => {
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: false,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            urls: [defaultUrl + "/test"]
+        });
+        updateWindowLocation(defaultUrl + "/test");
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run first interval
+        updateWindowLocation(defaultUrl + "/somethingelse");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run second interval
+        updateWindowLocation(defaultUrl + "/test");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run third interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(2);
+    });
 });
