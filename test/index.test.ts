@@ -11,6 +11,7 @@ describe("run", () => {
     vi.useFakeTimers();
     const defaultUrl = "https://www.test.com";
     const timeBetweenUrlLookup = 500;
+    const waitForElementInterval = 200;
 
     beforeEach(() => {
         updateWindowLocation(defaultUrl);
@@ -202,5 +203,61 @@ describe("run", () => {
         vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
         unsubscribe();
         expect(handler).toHaveBeenCalledTimes(2);
+    });
+
+    it("should wait for element before run", () => {
+        document.querySelector = vi.fn().mockReturnValue(true);
+
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: true,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            waitForElement: "#test"
+        });
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(waitForElementInterval + 1); // run first interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it("should not run if element is not found", () => {
+        document.querySelector = vi.fn().mockReturnValue(false);
+
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: true,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            waitForElement: "#test"
+        });
+
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(waitForElementInterval + 1); // run first interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(0);
+    });
+
+    it("should run if element is found on url changes", () => {
+        document.querySelector = vi.fn().mockReturnValue(false);
+
+        const handler = vi.fn();
+        const unsubscribe = run(handler, {
+            runAtStart: true,
+            timeBetweenUrlLookup: timeBetweenUrlLookup,
+            waitForElement: "#test"
+        });
+
+        vi.advanceTimersToNextTimer(); // run handler in timeout
+        vi.advanceTimersByTime(30000); // allow for element to be done checking for element before new url
+
+        document.querySelector = vi.fn().mockReturnValue(true);
+        updateWindowLocation(defaultUrl + "/test");
+        vi.advanceTimersByTime(timeBetweenUrlLookup + 1); // run second interval
+        vi.advanceTimersByTime(1000); // arbitrary time to run more intervals
+
+        unsubscribe();
+        expect(handler).toHaveBeenCalledTimes(1);
     });
 });
