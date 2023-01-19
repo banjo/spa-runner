@@ -1,7 +1,8 @@
-import { logger } from "./logger";
+import { getRunner } from "./runner";
+import { getLogger } from "./logger";
 import { matchWithWildcard } from "./match";
 
-type Config = {
+export type Config = {
     timeBetweenUrlLookup?: number;
     urls?: string[];
     timeoutBeforeHandlerInit?: number;
@@ -9,6 +10,8 @@ type Config = {
     waitForElement?: string;
     isDebug?: boolean;
 };
+
+export type Handler = () => void;
 
 const defaultConfig: Config = {
     timeBetweenUrlLookup: 500,
@@ -19,48 +22,18 @@ const defaultConfig: Config = {
     isDebug: false
 };
 
-const WAIT_FOR_ELEMENT_TIMEOUT = 200;
-const WAIT_FOR_ELEMENT_MAXIMUM_TRIES = 20;
-
-export const run = (handler: () => void, config = defaultConfig) => {
-    const log = logger(config.isDebug ?? false);
-
-    const runHandler = () => {
-        log("Preparing handler...");
-
-        if (config.waitForElement) {
-            log("Waiting for element...");
-            let tries = 0;
-
-            const element = document.querySelector(config.waitForElement);
-            if (!element && tries < WAIT_FOR_ELEMENT_MAXIMUM_TRIES) {
-                log("Element not found, trying again...");
-                tries++;
-                setTimeout(runHandler, WAIT_FOR_ELEMENT_TIMEOUT);
-                return;
-            }
-
-            if (!element) {
-                log("Element not found, giving up...");
-                return;
-            }
-
-            log("Element found...");
-        }
-
-        log("Running handler...");
-        setTimeout(handler, config.timeoutBeforeHandlerInit);
-        log("Handler done...");
-    };
+export const run = (handler: Handler, config = defaultConfig) => {
+    const logger = getLogger(config.isDebug ?? false);
+    const runner = getRunner(logger, handler, config);
 
     if (config.runAtStart) {
-        log("Running at start...");
-        runHandler();
+        logger("Running at start...");
+        runner();
     }
 
     // used only when the correct url change is found, that triggers the handler
-    let lastMatchingPath: string | null = null;
-    let lastMatchingSearch: string | null = null;
+    let lastMatchingPath = window.location.pathname;
+    let lastMatchingSearch = window.location.search;
 
     // used for every url change
     let lastPath = window.location.pathname;
@@ -85,19 +58,19 @@ export const run = (handler: () => void, config = defaultConfig) => {
             : true;
 
         if ((isNewMatchingUrl || isNotInitiated) && matchesUrl) {
-            log("New url found, running handler...");
+            logger("New url found, running handler...");
             lastMatchingPath = window.location.pathname;
             lastMatchingSearch = window.location.search;
-            runHandler();
+            runner();
         } else if (isNewUrl) {
             lastPath = window.location.pathname;
             lastSearch = window.location.search;
-            log("New url found, but does not match...");
+            logger("New url found, but does not match...");
         }
     }, config.timeBetweenUrlLookup);
 
     return () => {
-        log("Stopping...");
+        logger("Stopping...");
         clearInterval(runInterval);
     };
 };
