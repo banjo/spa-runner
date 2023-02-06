@@ -1,6 +1,6 @@
-import { getRunner } from "./runner";
 import { getLogger } from "./logger";
 import { matchWithWildcard } from "./match";
+import { getRunner } from "./runner";
 
 export type Config = {
     timeBetweenUrlLookup?: number;
@@ -23,10 +23,12 @@ const defaultConfig: Config = {
 };
 
 export const run = (handler: Handler, config = defaultConfig) => {
+    config = { ...defaultConfig, ...config };
+
     const logger = getLogger(config.isDebug ?? false);
     const runner = getRunner(logger, handler, config);
 
-    if (config.runAtStart) {
+    if (config?.runAtStart) {
         logger("Running at start...");
         runner();
     }
@@ -35,7 +37,6 @@ export const run = (handler: Handler, config = defaultConfig) => {
     let lastSearch = window.location.search;
 
     const runInterval = setInterval(() => {
-      
         const isNewUrl =
             lastPath !== window.location.pathname ||
             lastSearch !== window.location.search;
