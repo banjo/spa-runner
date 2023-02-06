@@ -1,3 +1,4 @@
+import { exists, select } from "@banjoanton/utils";
 import { getLogger } from "./logger";
 import { matchWithWildcard } from "./match";
 import { getRunner } from "./runner";
@@ -26,7 +27,7 @@ export type Config = {
      * This runs before timeoutBeforeHandlerInit. The runner is responsible for finding the element to wait for. Prefer this one if you want to wait for the page to load.
      * Defaults: null
      */
-    timeoutBeforeRunnerInit?: number | null;
+    timeoutBeforeRunnerInit?: number | undefined;
     /**
      * If true, the handler will run at start.
      * Default: true
@@ -40,6 +41,11 @@ export type Config = {
      * If true, some logs will be printed to the console for debugging.
      */
     isDebug?: boolean;
+
+    /**
+     * If set, the handler will run if the element is not present. This is good for SPA pages that sometimes clears the DOM without changing the url.
+     */
+    reRenderIfNotInDom?: string | undefined;
 };
 
 export type Handler = () => void;
@@ -48,10 +54,11 @@ const defaultConfig: Config = {
     timeBetweenUrlLookup: 500,
     urls: [],
     timeoutBeforeHandlerInit: 0,
-    timeoutBeforeRunnerInit: null,
+    timeoutBeforeRunnerInit: undefined,
     runAtStart: true,
     waitForElement: undefined,
-    isDebug: false
+    isDebug: false,
+    reRenderIfNotInDom: undefined
 };
 
 export const run = (handler: Handler, config = defaultConfig) => {
@@ -79,6 +86,16 @@ export const run = (handler: Handler, config = defaultConfig) => {
                   matchWithWildcard(window.location.href, url)
               )
             : true;
+
+        if (
+            exists(config.reRenderIfNotInDom) &&
+            !select.exists(config.reRenderIfNotInDom)
+        ) {
+            logger(
+                "Could not find element that was supposed to be there, re-rendering..."
+            );
+            runner();
+        }
 
         if (isNewUrl && matchesUrl) {
             logger("New url found, running handler...");
