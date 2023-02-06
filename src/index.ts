@@ -43,9 +43,9 @@ export type Config = {
     isDebug?: boolean;
 
     /**
-     * If set, the handler will run if the element is not present. This is good for SPA pages that sometimes clears the DOM without changing the url.
+     * If set, the handler will run if the element is not present. This is good for SPA pages that sometimes clears the DOM without changing the url. Pass in a query selector and be sure to add the element in the runner to not get stuck in an infinite loop.
      */
-    reRenderIfNotInDom?: string | undefined;
+    runIfNotInDom?: string | undefined;
 };
 
 export type Handler = () => void;
@@ -58,7 +58,7 @@ const defaultConfig: Config = {
     runAtStart: true,
     waitForElement: undefined,
     isDebug: false,
-    reRenderIfNotInDom: undefined
+    runIfNotInDom: undefined
 };
 
 export const run = (handler: Handler, config = defaultConfig) => {
@@ -88,8 +88,8 @@ export const run = (handler: Handler, config = defaultConfig) => {
             : true;
 
         if (
-            exists(config.reRenderIfNotInDom) &&
-            !select.exists(config.reRenderIfNotInDom)
+            exists(config.runIfNotInDom) &&
+            !select.exists(config.runIfNotInDom)
         ) {
             logger(
                 "Could not find element that was supposed to be there, re-rendering..."
