@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "@antfu/ni": "^0.18.8",
-        "@banjoanton/utils": "^0.1.28",
+        "@banjoanton/utils": "^0.1.30",
         "@typescript-eslint/eslint-plugin": "^5.46.1",
         "@typescript-eslint/parser": "^5.46.1",
         "bumpp": "^8.2.1",

@@ -5,7 +5,7 @@ importers:
   .:
     specifiers:
       '@antfu/ni': ^0.18.8
-      '@banjoanton/utils': ^0.1.28
+      '@banjoanton/utils': ^0.1.30
       '@typescript-eslint/eslint-plugin': ^5.46.1
       '@typescript-eslint/parser': ^5.46.1
       bumpp: ^8.2.1
@@ -20,7 +20,7 @@ importers:
       vitest: ^0.25.7
     devDependencies:
       '@antfu/ni': 0.18.8
-      '@banjoanton/utils': 0.1.28
+      '@banjoanton/utils': 0.1.30
       '@typescript-eslint/eslint-plugin': 5.46.1_imrg37k3svwu377c6q7gkarwmi
       '@typescript-eslint/parser': 5.46.1_ha6vam6werchizxrnqvarmz2zu
       bumpp: 8.2.1
@@ -247,8 +247,8 @@ packages:
       to-fast-properties: 2.0.0
     dev: true
 
-  /@banjoanton/utils/0.1.28:
-    resolution: {integrity: sha512-MBGoZz89D0gpBuHG/BZPkdjEyCIEwuy94NZTwSv/gJ4czXV2DPbyd8TYK5YihZH9o7wfp2Ti4k+zp/OXP0EFqA==}
+  /@banjoanton/utils/0.1.30:
+    resolution: {integrity: sha512-ZrEHemKV4+ApnXq0sli1V9zVz2eyXhA7O0fF5Lx145a6imdPeNnKDn0obeGHBWTsxUmomGCU7hKArg6PLNO/Ww==}
     dev: true
 
   /@esbuild-kit/cjs-loader/2.4.1:
